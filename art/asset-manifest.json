@@ -1,0 +1,163 @@
+{
+  "version": "1.1.0",
+  "project": "TURFWAR",
+  "last_updated": "2026-11-10T15:28:30Z",
+  "art_bible": "art/ART_BIBLE.md",
+  "palette": "32-color curated 16-bit medieval frontier ramp",
+  "projection": "2:1 isometric dimetric",
+  "assets": [
+    {
+      "id": "turfwar_emblem",
+      "category": "brand",
+      "source_file": "art/generated/turfwar_emblem_1794352868542.jpg",
+      "processed_file": "art/processed/brand/emblem.png",
+      "dimensions": { "width": 840, "height": 840 },
+      "transparent": true,
+      "usage": "Title screen emblem, marketplace header, brand badge"
+    },
+    {
+      "id": "turfwar_title_bg",
+      "category": "brand",
+      "source_file": "art/generated/turfwar_title_bg_1794353070837.jpg",
+      "processed_file": "art/processed/brand/title_bg.jpg",
+      "dimensions": { "width": 1792, "height": 1024 },
+      "transparent": false,
+      "usage": "Main title screen backdrop, loading scene key art"
+    },
+    {
+      "id": "building_blacksmith",
+      "category": "buildings",
+      "source_file": "art/generated/building_blacksmith_1794353090375.jpg",
+      "processed_file": "art/processed/buildings/blacksmith.png",
+      "dimensions": { "width": 890, "height": 920 },
+      "transparent": true,
+      "anchor": { "x": 0.5, "y": 0.85 },
+      "usage": "Town Square Blacksmith Forge building, deed #1 visualization"
+    },
+    {
+      "id": "tile_cobblestone",
+      "category": "tiles",
+      "processed_file": "art/processed/tiles/tile_cobblestone.png",
+      "dimensions": { "width": 64, "height": 32 },
+      "transparent": true,
+      "usage": "Town Square ground pavement"
+    },
+    {
+      "id": "tile_grass",
+      "category": "tiles",
+      "processed_file": "art/processed/tiles/tile_grass.png",
+      "dimensions": { "width": 64, "height": 32 },
+      "transparent": true,
+      "usage": "Meadow and wilderness ground"
+    },
+    {
+      "id": "tile_dirt",
+      "category": "tiles",
+      "processed_file": "art/processed/tiles/tile_dirt.png",
+      "dimensions": { "width": 64, "height": 32 },
+      "transparent": true,
+      "usage": "Forest trade road path and quarry floor"
+    },
+    {
+      "id": "tile_water",
+      "category": "tiles",
+      "processed_file": "art/processed/tiles/tile_water.png",
+      "dimensions": { "width": 64, "height": 32 },
+      "transparent": true,
+      "usage": "Town river and bridge edge"
+    },
+    {
+      "id": "tile_forest",
+      "category": "tiles",
+      "processed_file": "art/processed/tiles/tile_forest.png",
+      "dimensions": { "width": 64, "height": 32 },
+      "transparent": true,
+      "usage": "Darkwood forest underbrush"
+    },
+    {
+      "id": "prop_iron_rock",
+      "category": "props",
+      "processed_file": "art/processed/props/prop_iron_rock.png",
+      "dimensions": { "width": 48, "height": 48 },
+      "transparent": true,
+      "harvestable": true,
+      "resource_yield": "iron_ore",
+      "usage": "Darkwood Edge mining node"
+    },
+    {
+      "id": "prop_tree_oak",
+      "category": "props",
+      "processed_file": "art/processed/props/prop_tree_oak.png",
+      "dimensions": { "width": 64, "height": 80 },
+      "transparent": true,
+      "harvestable": true,
+      "resource_yield": "wood",
+      "usage": "Darkwood Edge timber resource & decorative foliage"
+    },
+    {
+      "id": "prop_herb_patch",
+      "category": "props",
+      "processed_file": "art/processed/props/prop_herb_patch.png",
+      "dimensions": { "width": 32, "height": 32 },
+      "transparent": true,
+      "harvestable": true,
+      "resource_yield": "herbs",
+      "usage": "Forest wild herb gathering node"
+    },
+    {
+      "id": "prop_wagon_caravan",
+      "category": "props",
+      "processed_file": "art/processed/props/prop_wagon_caravan.png",
+      "dimensions": { "width": 80, "height": 64 },
+      "transparent": true,
+      "usage": "Interactive caravan wagon in town and escort missions"
+    },
+    {
+      "id": "characters_spritesheets",
+      "category": "characters",
+      "items": [
+        "char_player.png",
+        "char_garrick.png",
+        "char_saffron.png",
+        "char_vex.png",
+        "char_guard.png",
+        "char_bandit.png"
+      ],
+      "dimensions": { "frame_width": 32, "frame_height": 48, "directions": 4, "frames_per_dir": 3 },
+      "transparent": true,
+      "usage": "Player and autonomous AI NPC animated sprites in world scenes"
+    },
+    {
+      "id": "dialogue_portraits",
+      "category": "portraits",
+      "items": [
+        "portrait_player.png",
+        "portrait_garrick.png",
+        "portrait_saffron.png",
+        "portrait_vex.png"
+      ],
+      "dimensions": { "width": 64, "height": 64 },
+      "transparent": true,
+      "usage": "High-fidelity retro dialogue box avatars"
+    },
+    {
+      "id": "items_icons",
+      "category": "items",
+      "items": [
+        "icon_wood.png",
+        "icon_iron_ore.png",
+        "icon_herbs.png",
+        "icon_iron_ingot.png",
+        "icon_sword_iron.png",
+        "icon_shield_iron.png",
+        "icon_repair_kit.png",
+        "icon_near_coin.png",
+        "icon_deed_forge.png",
+        "icon_wagon_nft.png"
+      ],
+      "dimensions": { "width": 32, "height": 32 },
+      "transparent": true,
+      "usage": "Inventory slots, trade modal rows, marketplace cards"
+    }
+  ]
+}

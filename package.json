@@ -1,0 +1,24 @@
+{
+  "name": "turfwar-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TURFWAR — Isometric Pixel-Art Economic RPG on NEAR",
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "check": "pnpm -r check",
+    "dev:server": "pnpm --filter @turfwar/server dev",
+    "dev:web": "pnpm --filter @turfwar/web dev",
+    "dev": "pnpm -r --parallel dev",
+    "process:art": "python3 scripts/process_art.py",
+    "test:contracts": "cargo test --manifest-path contracts/near/Cargo.toml"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
