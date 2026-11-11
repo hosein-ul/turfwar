@@ -2,5 +2,13 @@ node_modules/
 dist/
 target/
 .DS_Store
-*.log
+.gemini
 .gemini/
+.gemini/**
+.cargo/
+.rustup/
+.local/
+.bash*
+.profile
+.gitconfig
+hosein-ul/

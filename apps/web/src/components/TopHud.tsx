@@ -32,9 +32,9 @@ export const TopHud: React.FC<TopHudProps> = ({
       {/* Left: Player Profile & Balances */}
       <div className="hud-pill">
         <img
-          src="/assets/portraits/portrait_player.png"
+          src={player.portraitUrl || '/assets/portraits/portrait_player.png'}
           alt="Avatar"
-          style={{ width: '32px', height: '32px', borderRadius: '4px', border: '1px solid var(--gold-mid)' }}
+          style={{ width: '32px', height: '32px', borderRadius: '4px', border: '1px solid var(--gold-mid)', imageRendering: 'pixelated' }}
         />
         <div>
           <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--parchment-bg)' }}>

@@ -134,6 +134,8 @@ export interface PlayerProfile {
   durability: Partial<Record<ResourceId, number>>;
   reputation: number; // 0-100
   position: { x: number; y: number; zone: 'town_square' | 'darkwood_edge' | 'forest_road' };
+  portraitUrl?: string;
+  spriteKey?: string;
 }
 
 export interface AgentProfile {

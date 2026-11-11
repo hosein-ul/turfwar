@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Phaser from 'phaser';
 import { IsometricScene } from './game/IsometricScene.ts';
-import { TitleScreen } from './components/TitleScreen.tsx';
+import { TitleScreen, StarterOption } from './components/TitleScreen.tsx';
 import { TopHud } from './components/TopHud.tsx';
 import { LiveFeed } from './components/LiveFeed.tsx';
 import { BottomHotbar } from './components/BottomHotbar.tsx';
@@ -55,6 +55,25 @@ export const App: React.FC = () => {
 
   const phaserGameRef = useRef<Phaser.Game | null>(null);
   const sceneRef = useRef<IsometricScene | null>(null);
+  const selectedSpriteRef = useRef<string>('char_player');
+
+  const handleStartGame = (starter: StarterOption, isWallet: boolean = false) => {
+    selectedSpriteRef.current = starter.spriteKey;
+    setPlayer((prev) => ({
+      ...prev,
+      handle: starter.name,
+      portraitUrl: starter.portrait,
+      spriteKey: starter.spriteKey,
+      accountType: isWallet ? 'near_testnet' : 'guest',
+      nearAccountId: isWallet ? 'turfwar-player.testnet' : undefined
+    }));
+    if (isWallet) {
+      setWalletConnected(true);
+      setNearAccount('turfwar-player.testnet');
+      addToast('Connected to NEAR Testnet (turfwar-player.testnet)', 'success');
+    }
+    setInGame(true);
+  };
 
   const addToast = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = `toast-${Date.now()}`;
@@ -154,7 +173,8 @@ export const App: React.FC = () => {
         onPlayerPosition: (x, y, zone) => {
           setCurrentZone(zone);
         }
-      }
+      },
+      playerSprite: selectedSpriteRef.current
     });
 
     const handleResize = () => {
@@ -342,19 +362,8 @@ export const App: React.FC = () => {
       {/* Title Screen Overlay */}
       {!inGame && (
         <TitleScreen
-          onStartDemo={() => setInGame(true)}
-          onConnectWallet={() => {
-            setWalletConnected(true);
-            setNearAccount('turfwar-player.testnet');
-            setPlayer((prev) => ({
-              ...prev,
-              accountType: 'near_testnet',
-              nearAccountId: 'turfwar-player.testnet',
-              handle: 'turfwar-player'
-            }));
-            setInGame(true);
-            addToast('Connected to NEAR Testnet (turfwar-player.testnet)', 'success');
-          }}
+          onStartDemo={(starter) => handleStartGame(starter, false)}
+          onConnectWallet={(starter) => handleStartGame(starter, true)}
           onOpenJudgeGuide={() => setActiveModal('judge_mode')}
           walletConnected={walletConnected}
           nearAccount={nearAccount}

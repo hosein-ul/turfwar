@@ -24,13 +24,17 @@ export class IsometricScene extends Phaser.Scene {
   private caravanSprite?: Phaser.GameObjects.Image;
   private isMoving = false;
   private currentDir = 'se';
+  private playerSpriteKey = 'char_player';
 
   constructor() {
     super({ key: 'IsometricScene' });
   }
 
-  public init(data: { callbacks: SceneInteractionCallback }) {
+  public init(data: { callbacks: SceneInteractionCallback; playerSprite?: string }) {
     this.callbacks = data.callbacks;
+    if (data.playerSprite) {
+      this.playerSpriteKey = data.playerSprite;
+    }
   }
 
   public preload() {
@@ -44,6 +48,7 @@ export class IsometricScene extends Phaser.Scene {
 
     // Load buildings & props
     this.load.image('bldg_blacksmith', '/assets/buildings/blacksmith_256.png');
+    this.load.image('bldg_market', '/assets/buildings/market_stall_256.png');
     this.load.image('prop_wagon', '/assets/props/prop_wagon_caravan.png');
     this.load.image('prop_iron_rock', '/assets/props/prop_iron_rock.png');
     this.load.image('prop_tree_oak', '/assets/props/prop_tree_oak.png');
@@ -52,12 +57,13 @@ export class IsometricScene extends Phaser.Scene {
     this.load.image('prop_anvil', '/assets/props/prop_anvil.png');
     this.load.image('prop_lantern', '/assets/props/prop_lantern.png');
 
-    // Load characters (spritesheets: 96x192, 32x48 frames)
-    this.load.spritesheet('char_player', '/assets/characters/char_player.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.spritesheet('char_garrick', '/assets/characters/char_garrick.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.spritesheet('char_saffron', '/assets/characters/char_saffron.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.spritesheet('char_vex', '/assets/characters/char_vex.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.spritesheet('char_guard', '/assets/characters/char_guard.png', { frameWidth: 32, frameHeight: 48 });
+    // Load characters (spritesheets: 144x288, 48x72 frames)
+    this.load.spritesheet('char_player', '/assets/characters/char_player.png', { frameWidth: 48, frameHeight: 72 });
+    this.load.spritesheet('char_garrick', '/assets/characters/char_garrick.png', { frameWidth: 48, frameHeight: 72 });
+    this.load.spritesheet('char_saffron', '/assets/characters/char_saffron.png', { frameWidth: 48, frameHeight: 72 });
+    this.load.spritesheet('char_vex', '/assets/characters/char_vex.png', { frameWidth: 48, frameHeight: 72 });
+    this.load.spritesheet('char_guard', '/assets/characters/char_guard.png', { frameWidth: 48, frameHeight: 72 });
+    this.load.spritesheet('char_bandit', '/assets/characters/char_bandit.png', { frameWidth: 48, frameHeight: 72 });
   }
 
   public create() {
@@ -142,6 +148,12 @@ export class IsometricScene extends Phaser.Scene {
     crates.setOrigin(0.5, 0.8);
     crates.setDepth(cratePos.y);
 
+    // Market Stall
+    const stallPos = this.isoToScreen(5, 3);
+    const stall = this.add.image(stallPos.x, stallPos.y - 30, 'bldg_market');
+    stall.setOrigin(0.5, 0.85);
+    stall.setDepth(stallPos.y);
+
     // Caravan Wagon
     const wagonPos = this.isoToScreen(7, 4);
     this.caravanSprite = this.add.image(wagonPos.x, wagonPos.y, 'prop_wagon');
@@ -172,7 +184,7 @@ export class IsometricScene extends Phaser.Scene {
   }
 
   private createAnimations() {
-    const chars = ['player', 'garrick', 'saffron', 'vex', 'guard'];
+    const chars = ['player', 'garrick', 'saffron', 'vex', 'guard', 'bandit'];
     chars.forEach(c => {
       // 4 directions: 0=se, 1=sw, 2=ne, 3=nw
       ['se', 'sw', 'ne', 'nw'].forEach((dir, dirIdx) => {
@@ -195,20 +207,20 @@ export class IsometricScene extends Phaser.Scene {
   private spawnEntities() {
     // 1. Player Spawn (Town Square Center)
     const pPos = this.isoToScreen(4, 4);
-    this.player = this.add.sprite(pPos.x, pPos.y, 'char_player', 0);
-    this.player.setOrigin(0.5, 0.9);
+    this.player = this.add.sprite(pPos.x, pPos.y, this.playerSpriteKey, 0);
+    this.player.setOrigin(0.5, 0.95);
     this.player.setDepth(pPos.y);
 
     // 2. Spawn Garrick (Blacksmith) near Forge
     const gPos = this.isoToScreen(3, 4);
     const garrick = this.add.sprite(gPos.x, gPos.y, 'char_garrick', 0);
-    garrick.setOrigin(0.5, 0.9);
+    garrick.setOrigin(0.5, 0.95);
     garrick.setDepth(gPos.y);
     garrick.play('garrick_idle_se');
     garrick.setInteractive({ useHandCursor: true });
     garrick.on('pointerdown', () => this.callbacks.onTalkToNpc('garrick'));
 
-    const gName = this.add.text(gPos.x, gPos.y - 48, 'Garrick (Forge)', {
+    const gName = this.add.text(gPos.x, gPos.y - 56, 'Garrick (Forge)', {
       fontFamily: 'Cinzel, serif',
       fontSize: '11px',
       color: '#F8DE7E',
@@ -217,16 +229,16 @@ export class IsometricScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(gPos.y + 10);
     this.npcs.set('garrick', { sprite: garrick, nameplate: gName });
 
-    // 3. Spawn Saffron (Caravan Broker) near Wagon
+    // 3. Spawn Saffron (Caravan Broker) near Market Stall
     const sPos = this.isoToScreen(6, 4);
     const saffron = this.add.sprite(sPos.x, sPos.y, 'char_saffron', 3); // SW
-    saffron.setOrigin(0.5, 0.9);
+    saffron.setOrigin(0.5, 0.95);
     saffron.setDepth(sPos.y);
     saffron.play('saffron_idle_sw');
     saffron.setInteractive({ useHandCursor: true });
     saffron.on('pointerdown', () => this.callbacks.onTalkToNpc('saffron'));
 
-    const sName = this.add.text(sPos.x, sPos.y - 48, 'Saffron (Broker)', {
+    const sName = this.add.text(sPos.x, sPos.y - 56, 'Saffron (Broker)', {
       fontFamily: 'Cinzel, serif',
       fontSize: '11px',
       color: '#8CB9D1',
@@ -238,13 +250,13 @@ export class IsometricScene extends Phaser.Scene {
     // 4. Spawn Vex (Rival) near Town Boundary
     const vPos = this.isoToScreen(8, 7);
     const vex = this.add.sprite(vPos.x, vPos.y, 'char_vex', 3);
-    vex.setOrigin(0.5, 0.9);
+    vex.setOrigin(0.5, 0.95);
     vex.setDepth(vPos.y);
     vex.play('vex_idle_sw');
     vex.setInteractive({ useHandCursor: true });
     vex.on('pointerdown', () => this.callbacks.onTalkToNpc('vex'));
 
-    const vName = this.add.text(vPos.x, vPos.y - 48, 'Vex (Rival)', {
+    const vName = this.add.text(vPos.x, vPos.y - 56, 'Vex (Rival)', {
       fontFamily: 'Cinzel, serif',
       fontSize: '11px',
       color: '#E87A18',
@@ -252,6 +264,34 @@ export class IsometricScene extends Phaser.Scene {
       padding: { x: 4, y: 2 }
     }).setOrigin(0.5).setDepth(vPos.y + 10);
     this.npcs.set('vex', { sprite: vex, nameplate: vName });
+
+    // 5. Spawn Town Guard near Town Entrance
+    const guardPos = this.isoToScreen(9, 3);
+    const guard = this.add.sprite(guardPos.x, guardPos.y, 'char_guard', 0);
+    guard.setOrigin(0.5, 0.95);
+    guard.setDepth(guardPos.y);
+    guard.play('guard_idle_se');
+    this.add.text(guardPos.x, guardPos.y - 56, 'Watchman (Guard)', {
+      fontFamily: 'Cinzel, serif',
+      fontSize: '10px',
+      color: '#C0C0C0',
+      backgroundColor: '#1E1B18',
+      padding: { x: 4, y: 2 }
+    }).setOrigin(0.5).setDepth(guardPos.y + 10);
+
+    // 6. Spawn Forest Bandit scouting near wilderness border
+    const banditPos = this.isoToScreen(13, 8);
+    const bandit = this.add.sprite(banditPos.x, banditPos.y, 'char_bandit', 3);
+    bandit.setOrigin(0.5, 0.95);
+    bandit.setDepth(banditPos.y);
+    bandit.play('bandit_idle_sw');
+    this.add.text(banditPos.x, banditPos.y - 56, 'Outlaw Scout', {
+      fontFamily: 'Cinzel, serif',
+      fontSize: '10px',
+      color: '#E06C75',
+      backgroundColor: '#1E1B18',
+      padding: { x: 4, y: 2 }
+    }).setOrigin(0.5).setDepth(banditPos.y + 10);
   }
 
   private setupControls() {
@@ -313,7 +353,8 @@ export class IsometricScene extends Phaser.Scene {
       else if (dx >= 0 && dy < 0) this.currentDir = 'ne';
       else if (dx < 0 && dy < 0) this.currentDir = 'nw';
 
-      this.player.play(`player_walk_${this.currentDir}`, true);
+      const animPrefix = this.playerSpriteKey.replace('char_', '');
+      this.player.play(`${animPrefix}_walk_${this.currentDir}`, true);
 
       // Determine active world zone
       let zone = 'town_square';
@@ -323,7 +364,8 @@ export class IsometricScene extends Phaser.Scene {
       this.callbacks.onPlayerPosition(this.player.x, this.player.y, zone);
     } else {
       if (this.isMoving) {
-        this.player.play(`player_idle_${this.currentDir}`);
+        const animPrefix = this.playerSpriteKey.replace('char_', '');
+        this.player.play(`${animPrefix}_idle_${this.currentDir}`);
         this.isMoving = false;
       }
     }
@@ -359,7 +401,7 @@ export class IsometricScene extends Phaser.Scene {
     if (closest) {
       this.nearEntity = { type: closest.type, id: closest.id, name: closest.name };
       this.promptText.setText(`[E] ${closest.name}`);
-      this.promptText.setPosition(closest.x, closest.y - 42);
+      this.promptText.setPosition(closest.x, closest.y - 58);
       this.promptText.setVisible(true);
     } else {
       this.nearEntity = null;
