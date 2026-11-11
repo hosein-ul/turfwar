@@ -38,20 +38,26 @@ export class IsometricScene extends Phaser.Scene {
   }
 
   public preload() {
-    // Load rich 2:1 ground tiles & variations
+    // Load all 16 model-generated 2:1 ground tiles
     this.load.image('tile_cobble', '/assets/tiles/tile_cobblestone.png');
     this.load.image('tile_cobble_moss', '/assets/tiles/tile_cobble_moss.png');
+    this.load.image('tile_plaza_mosaic', '/assets/tiles/tile_plaza_mosaic.png');
+    this.load.image('tile_marble_gold', '/assets/tiles/tile_marble_gold.png');
+    this.load.image('tile_stone_border', '/assets/tiles/tile_stone_border.png');
     this.load.image('tile_grass', '/assets/tiles/tile_grass.png');
     this.load.image('tile_grass_flowers', '/assets/tiles/tile_grass_flowers.png');
+    this.load.image('tile_forest', '/assets/tiles/tile_forest.png');
+    this.load.image('tile_forest_mushroom', '/assets/tiles/tile_forest_mushroom.png');
     this.load.image('tile_dirt', '/assets/tiles/tile_dirt.png');
     this.load.image('tile_dirt_pebbles', '/assets/tiles/tile_dirt_pebbles.png');
+    this.load.image('tile_bridge_wood', '/assets/tiles/tile_bridge_wood.png');
+    this.load.image('tile_mud_swamp', '/assets/tiles/tile_mud_swamp.png');
     this.load.image('tile_water', '/assets/tiles/tile_water.png');
     this.load.image('tile_water_pond', '/assets/tiles/tile_water_pond.png');
-    this.load.image('tile_forest', '/assets/tiles/tile_forest.png');
-    this.load.image('tile_stone_border', '/assets/tiles/tile_stone_border.png');
     this.load.image('tile_stone_flagstone', '/assets/tiles/tile_stone_flagstone.png');
+    this.load.image('tile_forge_lava', '/assets/tiles/tile_forge_lava.png');
 
-    // Load buildings & props
+    // Load buildings & props (100% model-generated)
     this.load.image('bldg_blacksmith', '/assets/buildings/blacksmith_256.png');
     this.load.image('bldg_market', '/assets/buildings/market_stall_256.png');
     this.load.image('prop_wagon', '/assets/props/prop_wagon_caravan.png');
@@ -106,40 +112,59 @@ export class IsometricScene extends Phaser.Scene {
   private createIsometricMap() {
     const mapGridSize = 24;
 
-    // Build layered 2:1 isometric ground with rich variations
+    // Build layered 2:1 isometric ground with all 16 model-generated tiles
     for (let gx = -4; gx < mapGridSize; gx++) {
       for (let gy = -4; gy < mapGridSize; gy++) {
         const pos = this.isoToScreen(gx, gy);
         let tileKey = 'tile_cobble';
 
-        // 1. Town Square Water Pool at (1, 5) and (2, 5)
-        if ((gx === 1 && gy === 5) || (gx === 2 && gy === 5)) {
-          tileKey = 'tile_water_pond';
+        // 1. Town Square Lotus Pond at (0..1, 5..6)
+        if ((gx === 0 || gx === 1) && (gy === 5 || gy === 6)) {
+          tileKey = (gx + gy) % 2 === 0 ? 'tile_water_pond' : 'tile_water';
         }
-        // 2. Stone Curb surrounding Town Square
+        // 2. Blacksmith Heated Lava Forge Floor under Forge at (1..3, 1..3)
+        else if (gx >= 1 && gx <= 3 && gy >= 1 && gy <= 3) {
+          tileKey = 'tile_forge_lava';
+        }
+        // 3. Central Town Plaza Mosaic & Royal Marble Inlay at (3..6, 3..6)
+        else if (gx >= 3 && gx <= 6 && gy >= 3 && gy <= 6) {
+          tileKey = (gx + gy) % 2 === 0 ? 'tile_plaza_mosaic' : 'tile_marble_gold';
+        }
+        // 4. Stone Curb Perimeter around Town Square
         else if ((gx === 8 && gy <= 8) || (gy === 8 && gx <= 8)) {
           tileKey = 'tile_stone_border';
         }
-        // 3. Town Square Cobblestone with Moss variations
+        // 5. Outer Town Square Cobblestone & Mossy Stones
         else if (gx < 8 && gy < 8) {
-          tileKey = (gx * 3 + gy * 7) % 3 === 0 ? 'tile_cobble_moss' : 'tile_cobble';
+          tileKey = (gx * 3 + gy * 7) % 2 === 0 ? 'tile_cobble_moss' : 'tile_stone_border';
         }
-        // 4. Trade Road
-        else if ((gx >= 9 && gx <= 14 && gy >= 3 && gy <= 6) || (gy >= 9 && gy <= 13 && gx >= 3 && gx <= 7)) {
-          tileKey = (gx + gy) % 2 === 0 ? 'tile_dirt_pebbles' : 'tile_dirt';
+        // 6. River Stream & Wooden Plank Bridge at gx === 11
+        else if (gx === 11 && gy >= 1 && gy <= 14) {
+          if (gy >= 4 && gy <= 6) {
+            tileKey = 'tile_bridge_wood';
+          } else {
+            tileKey = gy % 2 === 0 ? 'tile_water' : 'tile_water_pond';
+          }
         }
-        // 5. Wilderness River / Stream
-        else if ((gx === 18 && gy >= 12 && gy <= 15) || (gx === 19 && gy >= 13 && gy <= 16)) {
-          tileKey = (gx + gy) % 2 === 0 ? 'tile_water_pond' : 'tile_water';
+        // 7. Frontier Trade Road & Gravel Path
+        else if ((gx >= 9 && gx <= 15 && gy >= 4 && gy <= 6) || (gy >= 9 && gy <= 13 && gx >= 4 && gx <= 6)) {
+          tileKey = (gx + gy) % 2 === 0 ? 'tile_dirt' : 'tile_dirt_pebbles';
         }
-        // 6. Wilderness Darkwood Forest & Flower Meadow
+        // 8. Ore Mine Slate Outcrop Zone (12..16, 9..13)
+        else if (gx >= 12 && gx <= 16 && gy >= 9 && gy <= 13) {
+          tileKey = (gx + gy) % 2 === 0 ? 'tile_stone_flagstone' : 'tile_mud_swamp';
+        }
+        // 9. Wilderness Darkwood Forest, Glowing Mushroom Grove & Flower Meadow
         else {
-          if ((gx + gy) % 4 === 0) {
+          const mod = Math.abs(gx * 5 + gy * 3) % 7;
+          if (mod === 0) {
+            tileKey = 'tile_forest_mushroom';
+          } else if (mod === 1 || mod === 2) {
             tileKey = 'tile_forest';
-          } else if ((gx * 5 + gy * 3) % 3 === 0) {
+          } else if (mod === 3 || mod === 4) {
             tileKey = 'tile_grass_flowers';
-          } else if ((gx + gy) % 7 === 0) {
-            tileKey = 'tile_stone_flagstone';
+          } else if (mod === 5) {
+            tileKey = 'tile_mud_swamp';
           } else {
             tileKey = 'tile_grass';
           }
@@ -154,11 +179,17 @@ export class IsometricScene extends Phaser.Scene {
     // Town Square Decorative Props & Buildings
     const bsPos = this.isoToScreen(2, 2);
     const bsBuilding = this.add.image(bsPos.x, bsPos.y - 40, 'bldg_blacksmith');
-    bsBuilding.setOrigin(0.5, 0.85); // Center-bottom ground contact anchor
+    bsBuilding.setOrigin(0.5, 0.85);
     bsBuilding.setDepth(bsPos.y);
 
+    // Blacksmith Anvil next to Garrick
+    const anvilPos = this.isoToScreen(3, 3);
+    const anvil = this.add.image(anvilPos.x, anvilPos.y, 'prop_anvil');
+    anvil.setOrigin(0.5, 0.85);
+    anvil.setDepth(anvilPos.y);
+
     // Street Lanterns
-    const lantern1Pos = this.isoToScreen(1, 6);
+    const lantern1Pos = this.isoToScreen(1, 7);
     const l1 = this.add.image(lantern1Pos.x, lantern1Pos.y, 'prop_lantern');
     l1.setOrigin(0.5, 0.9);
     l1.setDepth(lantern1Pos.y);
