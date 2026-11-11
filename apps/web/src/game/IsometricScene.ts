@@ -38,13 +38,18 @@ export class IsometricScene extends Phaser.Scene {
   }
 
   public preload() {
-    // Load 2:1 ground tiles
+    // Load rich 2:1 ground tiles & variations
     this.load.image('tile_cobble', '/assets/tiles/tile_cobblestone.png');
+    this.load.image('tile_cobble_moss', '/assets/tiles/tile_cobble_moss.png');
     this.load.image('tile_grass', '/assets/tiles/tile_grass.png');
+    this.load.image('tile_grass_flowers', '/assets/tiles/tile_grass_flowers.png');
     this.load.image('tile_dirt', '/assets/tiles/tile_dirt.png');
+    this.load.image('tile_dirt_pebbles', '/assets/tiles/tile_dirt_pebbles.png');
     this.load.image('tile_water', '/assets/tiles/tile_water.png');
+    this.load.image('tile_water_pond', '/assets/tiles/tile_water_pond.png');
     this.load.image('tile_forest', '/assets/tiles/tile_forest.png');
     this.load.image('tile_stone_border', '/assets/tiles/tile_stone_border.png');
+    this.load.image('tile_stone_flagstone', '/assets/tiles/tile_stone_flagstone.png');
 
     // Load buildings & props
     this.load.image('bldg_blacksmith', '/assets/buildings/blacksmith_256.png');
@@ -101,21 +106,42 @@ export class IsometricScene extends Phaser.Scene {
   private createIsometricMap() {
     const mapGridSize = 24;
 
-    // Build layered 2:1 isometric ground
+    // Build layered 2:1 isometric ground with rich variations
     for (let gx = -4; gx < mapGridSize; gx++) {
       for (let gy = -4; gy < mapGridSize; gy++) {
         const pos = this.isoToScreen(gx, gy);
         let tileKey = 'tile_cobble';
 
-        // Zone 1: Town Square (-2..10, -2..10) -> Cobblestone
-        // Zone 2: Forest Trade Road (11..16, 0..8) -> Dirt Road
-        // Zone 3: Darkwood Edge (10..22, 10..22) -> Lush Grass & Forest Undergrowth
-        if (gx > 8 || gy > 8) {
-          tileKey = 'tile_grass';
-          if ((gx >= 9 && gx <= 13) || (gy >= 9 && gy <= 13)) {
-            tileKey = 'tile_dirt';
-          } else if ((gx + gy) % 3 === 0) {
+        // 1. Town Square Water Pool at (1, 5) and (2, 5)
+        if ((gx === 1 && gy === 5) || (gx === 2 && gy === 5)) {
+          tileKey = 'tile_water_pond';
+        }
+        // 2. Stone Curb surrounding Town Square
+        else if ((gx === 8 && gy <= 8) || (gy === 8 && gx <= 8)) {
+          tileKey = 'tile_stone_border';
+        }
+        // 3. Town Square Cobblestone with Moss variations
+        else if (gx < 8 && gy < 8) {
+          tileKey = (gx * 3 + gy * 7) % 3 === 0 ? 'tile_cobble_moss' : 'tile_cobble';
+        }
+        // 4. Trade Road
+        else if ((gx >= 9 && gx <= 14 && gy >= 3 && gy <= 6) || (gy >= 9 && gy <= 13 && gx >= 3 && gx <= 7)) {
+          tileKey = (gx + gy) % 2 === 0 ? 'tile_dirt_pebbles' : 'tile_dirt';
+        }
+        // 5. Wilderness River / Stream
+        else if ((gx === 18 && gy >= 12 && gy <= 15) || (gx === 19 && gy >= 13 && gy <= 16)) {
+          tileKey = (gx + gy) % 2 === 0 ? 'tile_water_pond' : 'tile_water';
+        }
+        // 6. Wilderness Darkwood Forest & Flower Meadow
+        else {
+          if ((gx + gy) % 4 === 0) {
             tileKey = 'tile_forest';
+          } else if ((gx * 5 + gy * 3) % 3 === 0) {
+            tileKey = 'tile_grass_flowers';
+          } else if ((gx + gy) % 7 === 0) {
+            tileKey = 'tile_stone_flagstone';
+          } else {
+            tileKey = 'tile_grass';
           }
         }
 
